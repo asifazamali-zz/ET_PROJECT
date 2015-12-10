@@ -1,0 +1,6 @@
+Django==1.8.5
+Twisted==13.1.0
+django-crispy-forms
+django-registration-redux
+###############sudo apt-get install libjpeg8-dev##########################
+Pillow
