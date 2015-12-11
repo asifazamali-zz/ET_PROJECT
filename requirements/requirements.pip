@@ -4,3 +4,4 @@ django-crispy-forms
 django-registration-redux
 ###############sudo apt-get install libjpeg8-dev##########################
 Pillow
+###############twisted-websockets/./setup.py install######################

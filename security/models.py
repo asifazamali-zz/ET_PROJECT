@@ -33,6 +33,6 @@ class Posted_Question(models.Model):
     class Meta:
         db_table='published_questions'
 
-class SignUp(models.Model):
-    first_name= models.CharField(max_length=200)
-    email = models.EmailField(max_length=200)
+# class SignUp(models.Model):
+#     first_name= models.CharField(max_length=200)
+#     email = models.EmailField(max_length=200)

@@ -1,7 +1,7 @@
 from django import forms
 
 #from .models import ,Document,Friends,Request_send,Friends,Shared,Details,PrivacyDetails,PrivacyFriend,PrivacyDocs,\
-from .models import Question,Answer,SignUp
+from .models import Question,Answer
 
 
 # class ContactForm(forms.Form):
@@ -9,10 +9,10 @@ from .models import Question,Answer,SignUp
 #     email = forms.CharField()
 #     message = forms.CharField(widget=forms.Textarea)
 #
-class SignUpForm(forms.ModelForm):
-    class Meta:
-        model = SignUp
-        fields = ['first_name', 'email']
+# class SignUpForm(forms.ModelForm):
+#     class Meta:
+#         model = SignUp
+#         fields = ['first_name', 'email']
 #
 # #class UploadFileForm(forms.Form):
 #         #title = forms.CharField(max_length=50)

@@ -1,0 +1,6 @@
+
+1. Make a static folder + uploads/chats
+
+
+Problem:
+    List provided to users that particular user gives this option.

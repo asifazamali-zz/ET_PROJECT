@@ -50,11 +50,20 @@ class WebsocketChat(basic.LineReceiver):
                 #print file_path
                 self.factory.file_desc=open('static_in_env/media_root/uploads/chats/'+str(self.factory.question_id)+'.txt','w')
             print "enable chat"
+            # broad cast enable message and pop it in a client machine using some javascript
+            #return
         elif(split[1]=='disable' and split[0]=='admin'):
-            self.factory.enable=False
-            print 'disable chat'
-            if(self.factory.file_desc):
-                self.factory.file_desc.close()
+            msg_list=Set([])
+            for list in self.factory.list:
+                for items in list:
+                    msg_list.add(items)
+            print "broadcast disable message",msg_list
+            self.updateClients(data,msg_list)
+            # self.factory.enable=False
+            # print 'disable chat'
+            # if(self.factory.file_desc):
+            #     self.factory.file_desc.close()
+            #return
         else:
             print "number_of_connections",self.factory.num_connections
             if self.factory.sender not in self.factory.client_name.keys():
@@ -234,4 +243,4 @@ root.putChild("",resource) #the http protocol is up at /
 root.putChild("ws",ws_resource) #the websocket protocol is at /ws
 application = service.Application("chatserver")
 #print 'before interface'
-internet.TCPServer(9000, Site(root),interface='0.0.0.0').setServiceParent(application)
+internet.TCPServer(9000, Site(root),interface='127.0.0.1').setServiceParent(application)

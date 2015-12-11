@@ -4,7 +4,7 @@ from django.template import RequestContext
 from django.http import HttpResponseRedirect
 from chat.models import ChatRoom
 from .models import Question,Posted_Question,Answer,Reposted_Answer
-from .forms import QuestionForm,AnswerForm,SignUpForm
+from .forms import QuestionForm,AnswerForm
 
 
 ###################################################################################################################################################################################
@@ -87,8 +87,8 @@ def quiz(request):
     question=Question.objects.filter(id=_id)
     uploaded =Question.objects.all()
     submission=''
-    if('submission' in request.session.keys()):
-        submission=request.session['submission']
+    if(str(number_of_times)+str(_id) in request.session.keys()):
+        submission=request.session[str(number_of_times)+str(_id)]
     print submission + "submission"
     ############################################Chat room Id Creation##########################################
     # chat=ChatRoom(name=request.user.username)
@@ -132,35 +132,35 @@ def quiz(request):
             form=QuestionForm()
         else:
             print 'question form not valid'
-        if ansform.is_valid():
-            answer1=request.POST.get('options','')
-            question_id=request.POST.get('question_id')
-            repost = request.POST.get('number_of_times')
-            print 'question posted '+repost+'times'
-            if(answer1):
-                if repost=='1':
-                    model=Answer.objects.filter(question_id=question_id).filter(user_name=request.user.username)
-                    if(model):
-                        model.update(answer =answer1)
+            if ansform.is_valid():
+                answer1=request.POST.get('options','')
+                question_id=request.POST.get('question_id','')
+                repost = request.POST.get('number_of_times','')
+                #print 'question posted '+repost+'times'
+                if(answer1):
+                    if repost=='1':
+                        model=Answer.objects.filter(question_id=question_id).filter(user_name=request.user.username)
+                        if(model):
+                            model.update(answer =answer1)
+                        else:
+                            create=Answer(question_id=question_id,user_name=request.user.username,answer=answer1)
+                            create.save()
                     else:
-                        create=Answer(question_id=question_id,user_name=request.user.username,answer=answer1)
-                        create.save()
-                else:
-                    model=Reposted_Answer.objects.filter(question_id=question_id).filter(user_name=request.user.username)
-                    if(model):
-                        model.update(answer =answer1)
-                    else:
-                        create=Reposted_Answer(question_id=question_id,user_name=request.user.username,answer=answer1)
-                    # if(model):Answer(question_id=question_id,user_name=request.user.username,answer=answer)
-                        create.save()
-                #bool,created=Reposted_Answer.objects.update_or_create(question_id=question_id,user_name=request.user.username,defaults={'answer':answer})
+                        model=Reposted_Answer.objects.filter(question_id=question_id).filter(user_name=request.user.username)
+                        if(model):
+                            model.update(answer =answer1)
+                        else:
+                            create=Reposted_Answer(question_id=question_id,user_name=request.user.username,answer=answer1)
+                        # if(model):Answer(question_id=question_id,user_name=request.user.username,answer=answer)
+                            create.save()
+                    #bool,created=Reposted_Answer.objects.update_or_create(question_id=question_id,user_name=request.user.username,defaults={'answer':answer})
 
-                #ques    =''
+                    #ques    =''
 
-                submission='Your answer has submitted!!'
-                request.session['submission']=submission
-        else:
-                print "answer form not valid"
+                    submission='Your answer has submitted!!'
+                    request.session[str(number_of_times)+str(_id)]=submission
+            else:
+                    print "answer form not valid"
     if question:
         correct=Question.objects.filter(id=_id)[0].option_correct
         option_a=Answer.objects.filter(answer='0').filter(question_id=_id)
@@ -192,10 +192,9 @@ def quiz(request):
         for l in repost_d:
             re_list_d.append(str(l.user_name))
 
-    signupform = SignUpForm()
     return render_to_response(
     'quiz.html',
-    {'request':request,'signupform':signupform,'form':form,'ques':ques,'submission':submission,'uploaded':uploaded,
+    {'request':request,'form':form,'ques':ques,'submission':submission,'uploaded':uploaded,
      'post':switcher[number_of_times],'number_of_times':number_of_times,'option_a':len(list_a),'option_b':len(list_b),
         'option_c':len(list_c),'option_d':len(list_d),'re_option_a':len(re_list_a),'re_option_b':len(re_list_b),
         're_option_c':len(re_list_c),'re_option_d':len(re_list_d),'correct':correct},
