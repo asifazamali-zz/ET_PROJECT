@@ -40,6 +40,7 @@ class WebsocketChat(basic.LineReceiver):
                 self.factory.client_name.update({'admin':self.factory.clients[len(self.factory.clients)-1]})
             self.factory.list=json.loads(split[1])
             print self.factory.list
+            return
         elif(split[1]=='enable' and split[0]=='admin' ):
             self.factory.enable=True
             #question_id = request.POST.get('question_id')
@@ -51,7 +52,7 @@ class WebsocketChat(basic.LineReceiver):
                 self.factory.file_desc=open('static_in_env/media_root/uploads/chats/'+str(self.factory.question_id)+'.txt','w')
             print "enable chat"
             # broad cast enable message and pop it in a client machine using some javascript
-            #return
+            return
         elif(split[1]=='disable' and split[0]=='admin'):
             msg_list=Set([])
             for list in self.factory.list:
