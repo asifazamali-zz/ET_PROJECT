@@ -52,7 +52,7 @@ class WebsocketChat(basic.LineReceiver):
                 self.factory.file_desc=open('static_in_env/media_root/uploads/chats/'+str(self.factory.question_id)+'.txt','w')
             print "enable chat"
             # broad cast enable message and pop it in a client machine using some javascript
-            return
+            
         elif(split[1]=='disable' and split[0]=='admin'):
             msg_list=Set([])
             for list in self.factory.list:
@@ -95,7 +95,7 @@ class WebsocketChat(basic.LineReceiver):
                 self.updateClients(data,msg_list)
         else:
             try:
-                self.factory.client_name[self.factory.sender].message("chat not yet enable by admin")
+                self.factory.client_name[self.factory.sender].message(":chat not yet enable by admin:")
             except KeyError:
                 pass
             print "chat not enable yet"

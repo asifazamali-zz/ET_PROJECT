@@ -10,8 +10,8 @@
 <link href="{%static 'css/bootstrap.min.css'%}" rel="stylesheet">
 <link href="{%static 'css/navbar-static-top.css'%}" rel="stylesheet">
 <script src="{%static 'js/ie-emulation-modes-warning.js'%}"></script>
-
 <script src="{%static 'chats/js/jquery.min.js' %}"></script>
+<script src="{% static  'js/bootstrap.min.js' %}"></script>
 
 <script src="{%static 'chats/js/jquery.gracefulWebSocket.js' %}"></script>
 
@@ -38,10 +38,21 @@
     chat.ws.onmessage = function (event) {
       var messageFromServer = event.data;        //data from server
       var split_data =messageFromServer.split(':');
-      //$('input:text').val('hi');
+      //$('input:text').val();
+      if(split_data[1]=="chat not yet enable by admin"){
+        // $("#demo_text").val('hi');
+        $('#container').prepend("<div class='alert alert-danger fade in'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a>Chat not yet enable by admin</div>");  
+        return
+      }
+      if(split_data[0]=='admin'&&split_data[1]=='enable'){
+       $('#container').prepend("<div class='alert alert-success fade in'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a>Chat now enabled</div>");  
+        return 
+
+      }
       if(split_data[0]=='admin' && split_data[1]=='disable') {
           {%  if not user.is_superuser %}
-            $('#chat_form').submit();
+              $('#')
+              $('#chat_form').submit();
           {% endif %}
 {#          $('input:text').val(split_data[1]);#}
       }
@@ -84,56 +95,57 @@
 
  </script>
 {%include 'nav.html'%}
-<div class="row">
-  <div class="col-xs-6 col-md-4">
-    <h1> {{ user.username }} </h1>
-    <input type="hidden" value= '{{user.username}}' id="hidden"/>
-    {% if user.is_superuser %}
-    <input type="button" id="enable_button" value="Enable Chat" >
-    <input type="button" id="disable_button" value="Disable Chat" >
-    {%endif%}
+<div id = 'container' class='container'>
+  <div class="row">
+    <div class="col-xs-6 col-md-4">
+      <h1> {{ user.username }} </h1>
+      <input type="hidden" value= '{{user.username}}' id="hidden"/>
+      {% if user.is_superuser %}
+      <input type="button" id="enable_button" value="Enable Chat" >
+      <input type="button" id="disable_button" value="Disable Chat" >
+      {%endif%}
         <form id='chat_form' method="post" action="/">{%  csrf_token %}
-    <textarea name="term" id="inputbox" cols="40" rows="4"></textarea>
-
-    <div id="message_list">
-      <ul style="list-style: none;">
-      </ul>
-    </div>
+          <textarea name="term" id="inputbox" cols="40" rows="4"></textarea>
+          <input type='hidden' id='disable_chat' name='disable_chat' value='true'>
+          <div id="message_list">
+            <ul style="list-style: none;">
+            </ul>
+          </div>
         </form>
-  </div>
-  <div class="col-xs-6 col-md-4">      
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        Question
-      </div>
-      <div class="panel-body ">
-        <p><b>Question:</b>{{ question.question }}</p>
-        <p><img src="{{  question.image.url }}" height="250" width="250"/></p>
-        <p><b>Option_a:</b>{{ question.option_a }}</p>
-        <p><b>Option_b:</b>{{ question.option_b }}</p>
-        <p><b>Option_c:</b>{{ question.option_c }}</p>
-        <p><b>Option_d:</b>{{ question.option_d }}</p>
-      </div>
-    </div>  
-  </div>
-  {% if not user.is_superuser %}      
-  <div class="col-xs-6 col-md-4">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        User's Opinions
-      </div>
-      <div class="panel-body ">
-        {% for users,options in mapped_users.items %}
-            <p>{{ users }} : {{ options }}</p>
+    </div>
+    <div class="col-xs-6 col-md-4">      
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          Question
+        </div>
+        <div class="panel-body ">
+          <p><b>Question:</b>{{ question.question }}</p>
+          <p><img src="{{  question.image.url }}" height="250" width="250"/></p>
+          <p><b>Option_a:</b>{{ question.option_a }}</p>
+          <p><b>Option_b:</b>{{ question.option_b }}</p>
+          <p><b>Option_c:</b>{{ question.option_c }}</p>
+          <p><b>Option_d:</b>{{ question.option_d }}</p>
+        </div>
+      </div>  
+    </div>
+    {% if not user.is_superuser %}      
+    <div class="col-xs-6 col-md-4">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          User's Opinions
+        </div>
+        <div class="panel-body ">
+          {% for users,options in mapped_users.items %}
+              <p>{{ users }} : {{ options }}</p>
 
-        {% endfor %}
-      </div>
-    </div>    
+          {% endfor %}
+        </div>
+      </div>    
+    </div>
+    {% endif %}
   </div>
-  {% endif %}
 </div>
-
-{#    <input id="demo_text" type='text' name="name" />#}
+<!-- <input id="demo_text" type='text' name="name" /> -->
 {% else %}
 You have not logged in:
 <br><a href="accounts/login/">Login</a>

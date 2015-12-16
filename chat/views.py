@@ -662,7 +662,7 @@ def chat_room(request):
 		list=[[],[],[],[]]
     #print list
 	return render(request, 'chats/chat_room.html', {'list':list,'question_id':_id,'question':question[0],
-													'mapped_users':mapped_users,})
+													'mapped_users':mapped_users,'logged_in_users':request.session['logged_in_users']})
 
 # def longpoll_chat_room(request, chat_room_id):
 #     chat = get_object_or_404(ChatRoom, pk=chat_room_id)

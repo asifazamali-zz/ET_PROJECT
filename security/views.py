@@ -1,6 +1,9 @@
 from django.shortcuts import render
 from django.shortcuts import render_to_response
 from django.template import RequestContext
+from django.contrib.auth.models import User
+from django.contrib.sessions.models import Session
+from django.utils import timezone
 from django.http import HttpResponseRedirect
 from chat.models import ChatRoom
 from .models import Question,Posted_Question,Answer,Reposted_Answer
@@ -8,6 +11,8 @@ from .forms import QuestionForm,AnswerForm
 
 
 ###################################################################################################################################################################################
+
+
 def registration_complete(request):
     return render(request,'registration/registration_complete.html',{})
 
@@ -19,6 +24,21 @@ def registration_complete(request):
 #         super(Question, self).save(*args, **kwargs)
 #         self.image = saved_image
 #     super(Question, self).save(*args, **kwargs)
+
+
+def get_all_logged_in_users(request):
+    sessions = Session.objects.filter(expire_date__gte=timezone.now())
+    request.session['logged_in_users'] = sessions.count()
+    return
+    # uid_list = []
+
+    # # Build a list of user ids from that query
+    # for session in sessions:
+    #     data = session.get_decoded()
+    # #     uid_list.append(data.get('_auth_user_id', None))
+
+    # # Query all logged in users based on id list
+    # return User.objects.filter(id__in=uid_list)
 
 def edit(request):
     print "inside edit"
@@ -68,6 +88,17 @@ def quiz(request):
     re_list_c=[]
     re_list_d=[]
     correct=1
+
+
+    ############################## Disabling chat and redirecting#########################################################################
+    if('disable_chat' not in request.session.keys()):
+        request.session['disable_chat']='false'
+    #disable_chat= 'false'
+    ############################## get all logged in users #################################################################################
+    get_all_logged_in_users(request)
+
+
+    ########################################################################################################################################
     form=QuestionForm(request.POST,request.FILES)
     ansform = AnswerForm(request.POST or None)
     number_of_times='0'
@@ -156,9 +187,12 @@ def quiz(request):
                     #bool,created=Reposted_Answer.objects.update_or_create(question_id=question_id,user_name=request.user.username,defaults={'answer':answer})
 
                     #ques    =''
-
+                    
                     submission='Your answer has submitted!!'
                     request.session[str(number_of_times)+str(_id)]=submission
+                ############################## Disabling chat and redirecting#########################################################################    
+                request.session['disable_chat']= request.POST.get('disable_chat','false')
+                #print 'disable_chat in submission',request.POST.get('disable_chat','false')    
             else:
                     print "answer form not valid"
     if question:
@@ -191,13 +225,14 @@ def quiz(request):
         repost_d=Reposted_Answer.objects.filter(answer='3').filter(question_id=_id)
         for l in repost_d:
             re_list_d.append(str(l.user_name))
-
+    #print disable_chat,'disable_chat'        
     return render_to_response(
     'quiz.html',
     {'request':request,'form':form,'ques':ques,'submission':submission,'uploaded':uploaded,
      'post':switcher[number_of_times],'number_of_times':number_of_times,'option_a':len(list_a),'option_b':len(list_b),
         'option_c':len(list_c),'option_d':len(list_d),'re_option_a':len(re_list_a),'re_option_b':len(re_list_b),
-        're_option_c':len(re_list_c),'re_option_d':len(re_list_d),'correct':correct},
+        're_option_c':len(re_list_c),'re_option_d':len(re_list_d),'correct':correct,
+        'disable_chat':request.session['disable_chat'],'logged_in_users':request.session['logged_in_users']},
         context_instance=RequestContext(request))
 
 

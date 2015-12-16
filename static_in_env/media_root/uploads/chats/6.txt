@@ -1,1 +1,5 @@
-No Chat happens!!
+admin:enable:6
+asif1:hcadfa
+asif:cadfa
+admin:disable:6
+asif: hello
